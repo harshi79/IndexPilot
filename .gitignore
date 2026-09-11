@@ -5,8 +5,9 @@ build/
 coverage/
 dist/
 
-# Local runtime data (embedded SQLite, generated session secret)
-data/
+# Local runtime data (embedded SQLite, generated session secret) —
+# anchored to the repo root so it never shadows source dirs like app/api/data/
+/data/
 *.sqlite
 *.sqlite-*
 

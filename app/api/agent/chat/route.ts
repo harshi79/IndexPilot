@@ -2,7 +2,7 @@ import { initDb } from "@/lib/db";
 import { requireUser } from "@/lib/session";
 import { getUserById } from "@/lib/auth";
 import { runAgent, type AgentEvent, type ProviderChoice } from "@/lib/agent/loop";
-import { PROVIDER_IDS, type ProviderId } from "@/lib/ai/models";
+import { PROVIDER_IDS, providerMeta, type ProviderId } from "@/lib/ai/models";
 import type { Account } from "@/lib/mail/types";
 
 export const runtime = "nodejs";
@@ -45,11 +45,16 @@ async function resolveProvider(
   if (!row && rows.length > 0) row = rows[0];
   if (!row || !row.api_key) return null;
   if (!PROVIDER_IDS.includes(row.provider as ProviderId)) return null;
+  const meta = providerMeta(row.provider)!;
   return {
     id: row.provider as ProviderId,
     apiKey: row.api_key,
     baseUrl: row.base_url ?? undefined,
-    model: requested?.model || profileDefault.model || row.default_model || "auto",
+    model:
+      requested?.model ||
+      profileDefault.model ||
+      row.default_model ||
+      meta.models[0].id,
   };
 }
 

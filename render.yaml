@@ -1,0 +1,30 @@
+# Render Blueprint — deploy IndexPilot to Render (free plan) with `render up`.
+#
+# Free-plan notes:
+# - Instances sleep after ~15 min of inactivity; the first request after a
+#   pause takes a few seconds to boot. The /api/health endpoint is a cheap
+#   liveness probe (optionally polled from a cron to keep it warm).
+# - The container disk is EPHEMERAL: local SQLite data resets on every
+#   redeploy/sleep-cycle. For durable data, create a free Turso database and
+#   set TURSO_DATABASE_URL + TURSO_AUTH_TOKEN below.
+
+services:
+  - type: web
+    name: indexpilot
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Optional — set these to persist user data on Turso (free tier).
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      # Optional long random string for session-cookie signing.
+      - key: SESSION_SECRET
+        sync: false

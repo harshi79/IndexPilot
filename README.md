@@ -27,6 +27,31 @@ npm run dev        # http://localhost:3000
 3. Open **Copilot** and try: *“What needs my attention today?”* or *“Clean up the newsletters.”*
 4. Add real keys under **Settings → AI (BYOK)** whenever you're ready — the copilot switches from demo brain to your model automatically.
 
+## Deploy to Render (free plan)
+
+The repo ships a production **Dockerfile** (multi-stage `node:22-alpine`, non-root) and a **Render Blueprint** (`render.yaml`), plus a liveness probe at **`/api/health`** (returns `200` with body `ok`).
+
+**One-click:**
+```bash
+# with the Render CLI (installs from the Blueprint)
+render up
+```
+
+**Or manually** (Render → *New → Web Service*):
+1. Connect this repo.
+2. **Runtime → Docker** (it finds `./Dockerfile` automatically).
+3. Plan: **Free**.
+4. Set **Health Check Path** to `/api/health`.
+5. (Recommended) add the env vars below, then Deploy.
+
+| Env var | Why |
+|---|---|
+| `TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` | **Strongly recommended on the free plan.** Render's container disk is ephemeral — without a Turso DB, local SQLite resets on every redeploy or sleep cycle. A free Turso database makes accounts, mail cache, chats, and keys durable. |
+| `SESSION_SECRET` | Any long random string (auto-generated if unset, but then sessions reset with the disk). |
+| `NEXT_PUBLIC_APP_URL` | Only needed to pin the Gmail OAuth redirect URI; by default it's derived from the request origin, so a deployed service "just works". |
+
+Free-plan notes: instances sleep after ~15 min idle (first request takes a few seconds to wake — the health check confirms liveness); polling `/api/health` from a free cron keeps it warm.
+
 ## Connecting a real Gmail account
 
 Two BYOK options, both in **Settings → Email accounts**:

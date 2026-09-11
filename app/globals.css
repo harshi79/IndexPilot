@@ -392,6 +392,120 @@ body {
   animation: ip-fade-up 220ms ease both;
 }
 
+/* ── Landing FX ──────────────────────────────────────────────────── */
+
+/* Ambient orbs drifting behind the hero */
+.lp-orb {
+  background: radial-gradient(closest-side, var(--accent-soft), transparent 72%);
+  animation: lp-orb 12s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+.lp-orb-2 {
+  animation-delay: -6s;
+  opacity: 0.7;
+}
+@keyframes lp-orb {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 0.75;
+  }
+  to {
+    transform: scale(1.18) translateY(34px);
+    opacity: 1;
+  }
+}
+
+/* Cursor spotlight that follows the pointer across the hero */
+.lp-spotlight {
+  background: radial-gradient(closest-side, var(--accent-soft), transparent 70%);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.lp-pulse {
+  animation: ip-pulse-dot 2.4s ease-in-out infinite;
+}
+
+/* Provider marquee (pauses on hover, off under reduced motion) */
+.lp-marquee {
+  position: relative;
+  overflow: hidden;
+  padding: 13px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.lp-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: lp-marquee 32s linear infinite;
+}
+.lp-marquee:hover .lp-marquee-track {
+  animation-play-state: paused;
+}
+.lp-marquee-half {
+  display: flex;
+  align-items: center;
+}
+.lp-marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.lp-marquee-dot {
+  color: var(--accent);
+  font-size: 7px;
+  opacity: 0.8;
+}
+@keyframes lp-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Live agent trace in the hero mock */
+.lp-trace-line {
+  display: block;
+  min-height: 1.3em;
+}
+.lp-caret {
+  display: inline-block;
+  margin-left: 1px;
+  color: var(--accent);
+  animation: lp-caret 0.9s step-end infinite;
+}
+@keyframes lp-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Feature cards: gold glow on hover */
+.lp-glow {
+  position: relative;
+}
+.lp-glow:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 14px 44px -20px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-marquee-track,
+  .lp-orb,
+  .lp-pulse,
+  .lp-caret {
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   ArrowRight,
 } from "lucide-react";
+import LandingFx from "@/components/landing/fx";
 
 const FEATURES = [
   {
@@ -65,6 +66,7 @@ const PROVIDERS = ["OpenAI", "Google Gemini", "OpenRouter", "Groq", "NVIDIA NIM"
 
 export default function LandingPage() {
   return (
+    <LandingFx>
     <div className="min-h-screen bg-bg">
       {/* Nav */}
       <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur">
@@ -89,7 +91,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section className="lp-hero relative overflow-hidden">
         <div
           className="pointer-events-none absolute inset-0"
           style={{
@@ -98,35 +100,38 @@ export default function LandingPage() {
           }}
           aria-hidden
         />
+        <div className="lp-orb pointer-events-none absolute -right-40 -top-48 h-[480px] w-[480px] rounded-full" aria-hidden />
+        <div className="lp-orb lp-orb-2 pointer-events-none absolute -left-52 top-1/3 h-[420px] w-[420px] rounded-full" aria-hidden />
+        <div className="lp-spotlight pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0" aria-hidden />
         <div className="relative mx-auto max-w-[1120px] px-5 pb-16 pt-20 md:pt-28">
           <div className="max-w-[640px]">
-            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+            <p data-hero className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent lp-pulse" />
               BYOK AI · multi-account · zero walls
             </p>
-            <h1 className="mt-6 text-[42px] font-bold leading-[1.08] tracking-tight text-ink md:text-[56px]">
+            <h1 data-hero className="mt-6 text-[42px] font-bold leading-[1.08] tracking-tight text-ink md:text-[56px]">
               Your inbox,
               <br />
               <span className="text-accent">piloted.</span>
             </h1>
-            <p className="mt-5 max-w-[520px] text-[16px] leading-relaxed text-ink-2">
+            <p data-hero className="mt-5 max-w-[520px] text-[16px] leading-relaxed text-ink-2">
               IndexPilot is a professional Gmail manager with an AI chief of staff. It triages what matters, drafts the
               replies, and files the rest — running on <strong className="font-semibold text-ink">your</strong> API keys
               from any provider, with no paywalls in between.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div data-hero className="mt-8 flex flex-wrap items-center gap-3">
               <Link href="/auth" className="btn btn-primary !px-5 !py-2.5 !text-[14px]">
                 Start free — no AI key required <ArrowRight size={15} />
               </Link>
               <a href="#how" className="btn btn-secondary !px-5 !py-2.5 !text-[14px]">See how it works</a>
             </div>
-            <p className="mt-4 font-mono text-[11px] text-ink-3">
+            <p data-hero className="mt-4 font-mono text-[11px] text-ink-3">
               Works instantly in demo mode · bring real Gmail + real AI keys whenever you're ready
             </p>
           </div>
 
           {/* Product mock */}
-          <div className="card mt-14 overflow-hidden !rounded-2xl shadow-pop">
+          <div data-hero className="lp-mock card mt-14 overflow-hidden !rounded-2xl shadow-pop">
             <div className="flex items-center gap-2 border-b border-line bg-surface-2 px-4 py-2.5">
               <span className="h-2.5 w-2.5 rounded-full bg-danger/60" />
               <span className="h-2.5 w-2.5 rounded-full bg-warn/60" />
@@ -194,8 +199,10 @@ export default function LandingPage() {
                   <p className="mt-1">2. <strong className="text-ink">Contract redlines</strong> — 3 items, ready to close.</p>
                   <p className="mt-1">I drafted both replies — review in Drafts.</p>
                 </div>
-                <div className="mt-2 flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-1.5 font-mono text-[9.5px] text-ink-3">
-                  <span className="text-success">✓</span> create_draft × 2 · get_inbox_overview
+                <div className="lp-trace mt-2 space-y-1 rounded-lg border border-line bg-surface px-2.5 py-2 font-mono text-[9.5px] leading-relaxed text-ink-3">
+                  <span className="lp-trace-line block">▸ get_inbox_overview → 26 emails · 8 unread</span>
+                  <span className="lp-trace-line block">▸ draft_reply(Priya) → saved to Drafts</span>
+                  <span className="lp-trace-line block">▸ archive ×5 newsletters ✓ inbox cleared</span>
                 </div>
               </div>
             </div>
@@ -203,16 +210,34 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Provider marquee */}
+      <div className="lp-marquee border-y border-line bg-surface" aria-hidden>
+        <div className="lp-marquee-track">
+          {[0, 1].map((dup) => (
+            <div key={dup} className="lp-marquee-half">
+              {["OpenAI", "Google Gemini", "OpenRouter", "Groq", "NVIDIA NIM", "your keys", "zero walls", "free tiers included"].map((t) => (
+                <span key={t} className="lp-marquee-item">
+                  {t}
+                  <span className="lp-marquee-dot">◆</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Features */}
       <section id="features" className="border-t border-line">
         <div className="mx-auto max-w-[1120px] px-5 py-20">
-          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent">Features</p>
-          <h2 className="mt-3 max-w-[520px] text-[28px] font-bold leading-tight tracking-tight text-ink md:text-[34px]">
-            Built like a professional tool, not a demo.
-          </h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div data-reveal>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent">Features</p>
+            <h2 className="mt-3 max-w-[520px] text-[28px] font-bold leading-tight tracking-tight text-ink md:text-[34px]">
+              Built like a professional tool, not a demo.
+            </h2>
+          </div>
+          <div data-reveal-group className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
-              <div key={f.title} className="card group p-5 transition-all hover:-translate-y-0.5 hover:border-line-strong">
+              <div key={f.title} className="card lp-glow group p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-line-strong">
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-soft text-accent">
                   {f.icon}
                 </span>
@@ -227,8 +252,10 @@ export default function LandingPage() {
       {/* How it works */}
       <section id="how" className="border-t border-line bg-surface">
         <div className="mx-auto max-w-[1120px] px-5 py-20">
-          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent">How it works</p>
-          <h2 className="mt-3 text-[28px] font-bold tracking-tight text-ink md:text-[34px]">Three steps to a piloted inbox.</h2>
+          <div data-reveal>
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent">How it works</p>
+            <h2 className="mt-3 text-[28px] font-bold tracking-tight text-ink md:text-[34px]">Three steps to a piloted inbox.</h2>
+          </div>
           <div className="mt-10 grid gap-4 md:grid-cols-3">
             {STEPS.map((s) => (
               <div key={s.n} className="rounded-xl border border-line bg-bg p-5">
@@ -245,7 +272,7 @@ export default function LandingPage() {
       <section id="byok" className="border-t border-line">
         <div className="mx-auto max-w-[1120px] px-5 py-20">
           <div className="grid items-center gap-10 md:grid-cols-2">
-            <div>
+            <div data-reveal>
               <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent">Bring your own keys</p>
               <h2 className="mt-3 text-[28px] font-bold leading-tight tracking-tight text-ink md:text-[34px]">
                 We ship no AI. You never hit our ceiling.
@@ -279,13 +306,15 @@ export default function LandingPage() {
       {/* CTA */}
       <section className="border-t border-line bg-surface">
         <div className="mx-auto max-w-[1120px] px-5 py-20 text-center">
-          <h2 className="text-[30px] font-bold tracking-tight text-ink md:text-[38px]">
-            Stop drowning. <span className="text-accent">Start piloting.</span>
-          </h2>
-          <p className="mx-auto mt-3 max-w-[440px] text-[14px] leading-relaxed text-ink-3">
-            Open the app, grab the demo inbox, and see the copilot work in under a minute.
-          </p>
-          <div className="mt-8 flex justify-center">
+          <div data-reveal>
+            <h2 className="text-[30px] font-bold tracking-tight text-ink md:text-[38px]">
+              Stop drowning. <span className="text-accent">Start piloting.</span>
+            </h2>
+            <p className="mx-auto mt-3 max-w-[440px] text-[14px] leading-relaxed text-ink-3">
+              Open the app, grab the demo inbox, and see the copilot work in under a minute.
+            </p>
+          </div>
+          <div className="mt-8 flex justify-center" data-reveal>
             <Link href="/auth" className="btn btn-primary !px-6 !py-3 !text-[15px]">
               Open IndexPilot <ArrowRight size={16} />
             </Link>
@@ -308,5 +337,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </LandingFx>
   );
 }

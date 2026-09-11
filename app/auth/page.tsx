@@ -1,11 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Compass, KeyRound, Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 import { Spinner, toast } from "@/components/ui";
 import { TelegramPop } from "@/components/telegram-pop";
+
+function GoogleMark() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden>
+      <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
+      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
+      <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z" />
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.29 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
+    </svg>
+  );
+}
+
+const OAUTH_ERRORS: Record<string, string> = {
+  google_not_configured:
+    "Google sign-in isn’t configured on this instance. Use email and password below.",
+  google_denied:
+    "Google permission was denied. You need to approve Gmail access to continue.",
+  google_expired: "That sign-in session expired. Please try again.",
+  google_missing: "Google returned an incomplete response. Please try again.",
+  google_token: "Couldn’t verify Google’s response. Please try again.",
+  google_noemail: "Google didn’t return an email address for this account.",
+  google_unverified:
+    "Your Google account’s email address isn’t verified. Verify it with Google and try again.",
+  google_error: "Google sign-in failed. Please try again.",
+};
 
 export default function AuthPage() {
   const router = useRouter();
@@ -14,7 +39,19 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleEnabled, setGoogleEnabled] = useState(false);
+  const [googleLeaving, setGoogleLeaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("error");
+    if (code && OAUTH_ERRORS[code]) setError(OAUTH_ERRORS[code]);
+    fetch("/api/auth/providers")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setGoogleEnabled(Boolean(j?.google)))
+      .catch(() => setGoogleEnabled(false));
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,7 +185,34 @@ export default function AuthPage() {
               : "Sign in to pick up where you left off."}
           </p>
 
-          <form onSubmit={submit} className="mt-6 space-y-3">
+          {googleEnabled && (
+            <div className="mt-6">
+              <a
+                href="/api/auth/google"
+                onClick={() => setGoogleLeaving(true)}
+                className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-line bg-surface px-4 py-2.5 text-[13.5px] font-medium text-ink transition-colors hover:border-line-strong hover:bg-surface-2"
+              >
+                {googleLeaving ? <Spinner size={15} /> : <GoogleMark />}
+                Continue with Google
+              </a>
+              <p className="mt-2 flex items-start gap-1.5 text-[11px] leading-relaxed text-ink-3">
+                <ShieldCheck size={12} className="mt-px shrink-0 text-accent" />
+                One consent screen signs you in and grants IndexPilot permission
+                to read, label, draft and send your Gmail. Revoke anytime at{" "}
+                <span className="whitespace-nowrap font-mono">myaccount.google.com</span>.
+              </p>
+
+              <div className="my-5 flex items-center gap-3">
+                <span className="h-px flex-1 bg-line" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-3">
+                  or use email
+                </span>
+                <span className="h-px flex-1 bg-line" />
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={submit} className={googleEnabled ? "space-y-3" : "mt-6 space-y-3"}>
             {mode === "register" && (
               <div>
                 <label htmlFor="a-name" className="mb-1 block text-[11.5px] font-medium text-ink-3">Name</label>

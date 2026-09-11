@@ -21,7 +21,8 @@ const SCHEMA = `
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
+  password_hash TEXT,                   -- null for Google-only accounts
+  google_sub TEXT,
   created_at INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS sessions (
@@ -171,6 +172,39 @@ class TursoSqlite implements Db {
   }
 }
 
+/** Migrate databases created before Google sign-in existed. */
+async function migrate(d: Db): Promise<void> {
+  const cols = await d.all<{ name: string; notnull: number }>(
+    "PRAGMA table_info(users)"
+  );
+  if (cols.length === 0) return;
+  const hashCol = cols.find((c) => c.name === "password_hash");
+  const hasGoogleSub = cols.some((c) => c.name === "google_sub");
+
+  if ((hashCol && hashCol.notnull) || !hasGoogleSub) {
+    // Rebuild users with a nullable password_hash + google_sub column.
+    await d.exec(
+      `CREATE TABLE _users_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT NOT NULL UNIQUE,
+        password_hash TEXT,
+        google_sub TEXT,
+        created_at INTEGER NOT NULL
+      )`
+    );
+    await d.exec(
+      `INSERT INTO _users_new (id, email, password_hash, google_sub, created_at)
+       SELECT id, email, password_hash, NULL, created_at FROM users`
+    );
+    await d.exec("DROP TABLE users");
+    await d.exec("ALTER TABLE _users_new RENAME TO users");
+  }
+  await d.exec(
+    `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_sub
+       ON users (google_sub) WHERE google_sub IS NOT NULL`
+  );
+}
+
 let instance: Db | null = null;
 
 export function db(): Db {
@@ -191,5 +225,6 @@ export function db(): Db {
 export async function initDb(): Promise<Db> {
   const d = db();
   await d.exec(SCHEMA);
+  await migrate(d);
   return d;
 }

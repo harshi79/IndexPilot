@@ -52,6 +52,22 @@ render up
 
 Free-plan notes: instances sleep after ~15 min idle (first request takes a few seconds to wake — the health check confirms liveness); polling `/api/health` from a free cron keeps it warm.
 
+## Sign in with Google
+
+When the instance is configured with a Google OAuth client, the `/auth` page shows a **Continue with Google** button. A single consent screen:
+
+1. **Signs you in (or registers you)** — verified via Google's ID token (`openid email profile`);
+2. **Connects your Gmail automatically** — the same grant requests `gmail.modify` + `gmail.send` permissions, so your inbox syncs immediately (you can revoke anytime at [myaccount.google.com](https://myaccount.google.com)).
+
+Setup (one-time, operator side):
+
+1. In [Google Cloud Console](https://console.cloud.google.com) enable the **Gmail API**;
+2. Create an **OAuth 2.0 Client ID → Web application**;
+3. Add an **Authorized redirect URI** of `<your origin>/api/auth/google/callback`;
+4. Set `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` (see [Configuration](#configuration)) and restart.
+
+Email/password registration still exists as a fallback (passwords hashed with scrypt); Google-only accounts have no local password. The per-user BYO-OAuth-client option below still works for connecting *additional* Gmail accounts.
+
 ## Connecting a real Gmail account
 
 Two BYOK options, both in **Settings → Email accounts**:
@@ -87,6 +103,7 @@ cp .env.example .env.local
 |---|---|
 | `NEXT_PUBLIC_APP_URL` | Override the public base URL (used for the Gmail OAuth redirect). By default the app uses the origin of the current request, so most deployments need nothing. |
 | `SESSION_SECRET` | Long random string for signing session cookies. Auto-generated and persisted to `data/.session_secret` if unset. |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth **Web application** client pair. When set, the *Continue with Google* button appears on `/auth`; redirect URI `<origin>/api/auth/google/callback`. |
 | `TURSO_DATABASE_URL` | `libsql://…` — when set (with the token below), all user data moves to your Turso database. |
 | `TURSO_AUTH_TOKEN` | Turso auth token. |
 

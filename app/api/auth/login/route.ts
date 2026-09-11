@@ -9,17 +9,30 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as { email?: string; password?: string };
+    let body: { email?: string; password?: string };
+    try {
+      body = (await req.json()) as { email?: string; password?: string };
+    } catch {
+      return fail("Invalid request.", 400);
+    }
     const email = (body.email || "").trim().toLowerCase();
     const password = body.password || "";
     if (!email || !password) return fail("Email and password are required.");
 
     const d = await initDb();
-    const user = await d.get<{ id: number; password_hash: string }>(
+    const user = await d.get<{ id: number; password_hash: string | null }>(
       "SELECT id, password_hash FROM users WHERE email = ?",
       [email]
     );
-    if (!user || !verifyPassword(password, user.password_hash)) {
+    if (!user || !user.password_hash) {
+      return fail(
+        user
+          ? "This account signs in with Google. Use “Continue with Google”."
+          : "Incorrect email or password.",
+        401
+      );
+    }
+    if (!verifyPassword(password, user.password_hash)) {
       return fail("Incorrect email or password.", 401);
     }
     const token = await createSession(user.id);

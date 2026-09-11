@@ -36,3 +36,28 @@ export function useTurso(): boolean {
     process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN
   );
 }
+
+/**
+ * Server-side Google OAuth client used for the "Continue with Google" button.
+ * When unset, the button is hidden and only email/password auth is offered.
+ */
+export function googleOAuth(): { clientId: string; clientSecret: string } | null {
+  const clientId = (process.env.GOOGLE_CLIENT_ID || "").trim();
+  const clientSecret = (process.env.GOOGLE_CLIENT_SECRET || "").trim();
+  if (!clientId || !clientSecret) return null;
+  return { clientId, clientSecret };
+}
+
+/**
+ * Public origin of this request, honouring the proxy headers set by hosts
+ * (Render sets the protocol; the sandbox preview sets forwarded-host).
+ */
+export function requestOrigin(req: Request): string {
+  const fwdHost = req.headers.get("x-forwarded-host");
+  if (fwdHost) {
+    const proto =
+      (req.headers.get("x-forwarded-proto") || "https").split(",")[0].trim();
+    return `${proto}://${fwdHost.split(",")[0].trim()}`;
+  }
+  return new URL(req.url).origin;
+}

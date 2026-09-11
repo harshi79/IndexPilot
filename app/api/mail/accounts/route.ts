@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { initDb } from "@/lib/db";
+import { requestOrigin } from "@/lib/config";
 import { requireUser } from "@/lib/session";
 import { fail, json, rowToAccount } from "@/lib/api-helpers";
 import { getGmailProfileEmail } from "@/lib/mail/gmail";
@@ -93,13 +94,13 @@ export async function POST(req: Request) {
       const state = crypto.randomBytes(24).toString("hex");
       // Use the actual deployment origin unless overridden, so the redirect
       // URI is always correct wherever this instance runs.
-      const base = process.env.NEXT_PUBLIC_APP_URL || new URL(req.url).origin;
+      const base = process.env.NEXT_PUBLIC_APP_URL || requestOrigin(req);
       const redirectUri = `${base}/api/mail/oauth/callback`;
       await d.run(
         "INSERT INTO pending_oauth (state, payload, created_at) VALUES (?, ?, ?)",
         [
           state,
-          JSON.stringify({ userId: user.id, clientId, clientSecret, verifier, redirectUri }),
+          JSON.stringify({ flow: "connect", userId: user.id, clientId, clientSecret, verifier, redirectUri }),
           Date.now(),
         ]
       );

@@ -28,3 +28,12 @@ services:
       # Optional long random string for session-cookie signing.
       - key: SESSION_SECRET
         sync: false
+      # Optional — enables the "Continue with Google" button (OAuth Web client).
+      # Authorized redirect URI: https://<your-service>.onrender.com/api/auth/google/callback
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      # Public URL of the deployment, used to build the OAuth redirect URI.
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false

@@ -32,7 +32,10 @@ export async function GET(req: Request) {
     [state]
   );
   if (!row) return fail("This sign-in session expired. Start the connection again.", 400);
-  const pending = JSON.parse(row.payload) as Pending;
+  const pending = JSON.parse(row.payload) as Pending & { flow?: string };
+  if (pending.flow && pending.flow !== "connect") {
+    return fail("This sign-in session was meant for a different flow.", 400);
+  }
   await d.run("DELETE FROM pending_oauth WHERE state = ?", [state]);
 
   let tokens: {

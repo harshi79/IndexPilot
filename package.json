@@ -1,0 +1,28 @@
+{
+  "name": "indexpilot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "IndexPilot — a professional BYOK AI Gmail manager. Multiple accounts, no walls, your API keys, your data.",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@libsql/client": "^0.15.10",
+    "lucide-react": "^0.525.0",
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.0"
+  }
+}

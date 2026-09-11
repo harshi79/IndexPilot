@@ -1,0 +1,22 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+dist/
+
+# Local runtime data (embedded SQLite, generated session secret)
+data/
+*.sqlite
+*.sqlite-*
+
+*.tsbuildinfo
+next-env.d.ts
+
+.env
+.env.local
+.env.*.local
+
+.DS_Store
+npm-debug.log*
+__pycache__/

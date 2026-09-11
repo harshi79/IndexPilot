@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Compass, KeyRound, Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 import { Spinner, toast } from "@/components/ui";
+import { TelegramPop } from "@/components/telegram-pop";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -202,6 +203,8 @@ export default function AuthPage() {
           </p>
         </div>
       </div>
+
+      <TelegramPop delayMs={1200} />
     </div>
   );
 }

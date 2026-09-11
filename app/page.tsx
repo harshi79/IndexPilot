@@ -10,6 +10,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import LandingFx from "@/components/landing/fx";
+import { TelegramPop } from "@/components/telegram-pop";
 
 const FEATURES = [
   {
@@ -336,6 +337,8 @@ export default function LandingPage() {
           </p>
         </div>
       </footer>
+
+      <TelegramPop delayMs={2200} />
     </div>
     </LandingFx>
   );
